@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家具管理表單</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: url('https://ap11.ragic.com/sims/file.jsp?a=joycehuang&f=R30VLnrZjY%40funiture-2%20(1600%20x%20900%20%E5%83%8F%E7%B4%A0).svg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .form-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .conditional-field {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .image-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background-color: #fafafa;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .readonly {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+        .image-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background-color: #fafafa;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-image-placeholder {
+            color: #999;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                margin: 10px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1 class="form-title">家具管理表單</h1>
+        
+        <form id="furnitureForm">
+            <div class="form-group">
+                <label for="furnitureId">家具編號 *</label>
+                <input type="text" id="furnitureId" name="furnitureId" readonly class="readonly" required>
+            </div>
+
+            <div class="form-group">
+                <label for="lineId">LINE ID *</label>
+                <input type="text" id="lineId" name="lineId" readonly class="readonly" required>
+            </div>
+
+            <div class="form-group">
+                <label for="furnitureName">家具名稱 *</label>
+                <input type="text" id="furnitureName" name="furnitureName" readonly class="readonly" required>
+            </div>
+
+            <div class="form-group">
+                <label>家具圖片</label>
+                <div class="image-container">
+                    <img id="furnitureImage" src="" alt="家具圖片" style="display: none;">
+                    <div id="noImagePlaceholder" class="no-image-placeholder">
+                        <span>暫無圖片</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="furnitureStatus">家具狀態 *</label>
+                <select id="furnitureStatus" name="furnitureStatus" required>
+                    <option value="">請選擇狀態</option>
+                    <option value="上架">上架</option>
+                    <option value="下架">下架</option>
+                    <option value="結案">結案</option>
+                </select>
+            </div>
+
+            <!-- 結案時顯示的欄位 -->
+            <div id="closedFields" class="conditional-field">
+                <div class="form-group">
+                    <label for="closedDate">結案日期 *</label>
+                    <input type="date" id="closedDate" name="closedDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="buyer">成交對象 *</label>
+                    <input type="text" id="buyer" name="buyer">
+                </div>
+            </div>
+
+            <!-- 下架時顯示的欄位 -->
+            <div id="offlineFields" class="conditional-field">
+                <div class="form-group">
+                    <label for="offlineReason">下架原因 *</label>
+                    <select id="offlineReason" name="offlineReason">
+                        <option value="">請選擇原因</option>
+                        <option value="編輯家具資料">編輯家具資料</option>
+                        <option value="其他地方送出">其他地方送出</option>
+                        <option value="暫不想提供領取">暫不想提供領取</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+                
+                <div id="otherReasonField" class="form-group" style="display: none;">
+                    <label for="otherReason">其他原因 *</label>
+                    <textarea id="otherReason" name="otherReason" rows="3" placeholder="請詳細說明其他原因..."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">提交表單</button>
+        </form>
+    </div>
+
+    <script>
+        // 從網址參數取得預填資料
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 預填表單資料
+        function prefillForm() {
+            const furnitureId = getUrlParameter('furnitureId');
+            const lineId = getUrlParameter('lineId');
+            const furnitureName = getUrlParameter('furnitureName');
+            const imageUrl = getUrlParameter('imageUrl');
+            
+            if (furnitureId) {
+                document.getElementById('furnitureId').value = furnitureId;
+            }
+            
+            if (lineId) {
+                document.getElementById('lineId').value = lineId;
+            }
+            
+            if (furnitureName) {
+                document.getElementById('furnitureName').value = furnitureName;
+            }
+            
+            if (imageUrl) {
+                displayImage(imageUrl);
+            }
+        }
+
+        // 處理 Google Drive 連結
+        function processGoogleDriveUrl(url) {
+            // 檢查是否為 Google Drive 的 uc 連結
+            if (url.includes('drive.google.com/uc') && url.includes('id=')) {
+                const fileId = url.match(/id=([a-zA-Z0-9_-]+)/)[1];
+                return `https://lh3.googleusercontent.com/d/${fileId}`;
+            }
+            
+            // 檢查是否為 Google Drive 的一般分享連結
+            if (url.includes('drive.google.com/file/d/')) {
+                const fileId = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)[1];
+                return `https://lh3.googleusercontent.com/d/${fileId}`;
+            }
+            
+            return url;
+        }
+
+        // 顯示圖片
+        function displayImage(imageUrl) {
+            const img = document.getElementById('furnitureImage');
+            const placeholder = document.getElementById('noImagePlaceholder');
+            
+            // 處理 Google Drive 連結
+            const processedUrl = processGoogleDriveUrl(imageUrl);
+            
+            // 設置載入超時
+            const timeout = setTimeout(() => {
+                img.style.display = 'none';
+                placeholder.style.display = 'block';
+                placeholder.innerHTML = '<span>圖片載入超時<br><small>請檢查連結或網路狀況</small></span>';
+            }, 10000);
+            
+            img.onload = function() {
+                clearTimeout(timeout);
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            
+            img.onerror = function() {
+                clearTimeout(timeout);
+                // 如果是 Google Drive 連結失敗，嘗試原始連結
+                if (processedUrl !== imageUrl && imageUrl.includes('drive.google.com')) {
+                    console.log('嘗試備用方案...');
+                    tryAlternativeGoogleDriveUrl(imageUrl);
+                } else {
+                    img.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    placeholder.innerHTML = '<span>圖片載入失敗<br><small>請確認 Google Drive 圖片權限設為公開</small></span>';
+                }
+            };
+            
+            img.src = processedUrl;
+        }
+        
+        // 嘗試其他 Google Drive 圖片 URL 格式
+        function tryAlternativeGoogleDriveUrl(originalUrl) {
+            const img = document.getElementById('furnitureImage');
+            const placeholder = document.getElementById('noImagePlaceholder');
+            
+            let fileId;
+            if (originalUrl.includes('id=')) {
+                fileId = originalUrl.match(/id=([a-zA-Z0-9_-]+)/)[1];
+            } else if (originalUrl.includes('/file/d/')) {
+                fileId = originalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)[1];
+            }
+            
+            if (fileId) {
+                // 嘗試直接使用 Google Drive 的 thumbnail API
+                const alternativeUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+                
+                img.onload = function() {
+                    img.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                
+                img.onerror = function() {
+                    img.style.display = 'none';
+                    placeholder.style.display = 'block';
+                    placeholder.innerHTML = `
+                        <span>無法載入 Google Drive 圖片</span><br>
+                        <small>
+                            請確認：<br>
+                            1. 圖片權限設為「知道連結的任何人都能查看」<br>
+                            2. 或考慮使用其他圖片託管服務<br>
+                            <br>
+                            檔案ID: ${fileId}
+                        </small>
+                    `;
+                };
+                
+                img.src = alternativeUrl;
+            }
+        }
+
+        // 根據家具狀態顯示對應欄位
+        function toggleConditionalFields() {
+            const status = document.getElementById('furnitureStatus').value;
+            const closedFields = document.getElementById('closedFields');
+            const offlineFields = document.getElementById('offlineFields');
+            
+            // 隱藏所有條件欄位
+            closedFields.style.display = 'none';
+            offlineFields.style.display = 'none';
+            
+            // 根據狀態顯示對應欄位
+            if (status === '結案') {
+                closedFields.style.display = 'block';
+                // 設定必填屬性
+                document.getElementById('closedDate').required = true;
+                document.getElementById('buyer').required = true;
+                // 移除下架欄位的必填屬性
+                document.getElementById('offlineReason').required = false;
+                document.getElementById('otherReason').required = false;
+            } else if (status === '下架') {
+                offlineFields.style.display = 'block';
+                // 設定必填屬性
+                document.getElementById('offlineReason').required = true;
+                // 移除結案欄位的必填屬性
+                document.getElementById('closedDate').required = false;
+                document.getElementById('buyer').required = false;
+            } else {
+                // 移除所有條件欄位的必填屬性
+                document.getElementById('closedDate').required = false;
+                document.getElementById('buyer').required = false;
+                document.getElementById('offlineReason').required = false;
+                document.getElementById('otherReason').required = false;
+            }
+        }
+
+        // 根據下架原因顯示其他原因輸入框
+        function toggleOtherReasonField() {
+            const offlineReason = document.getElementById('offlineReason').value;
+            const otherReasonField = document.getElementById('otherReasonField');
+            const otherReasonInput = document.getElementById('otherReason');
+            
+            if (offlineReason === '其他') {
+                otherReasonField.style.display = 'block';
+                otherReasonInput.required = true;
+            } else {
+                otherReasonField.style.display = 'none';
+                otherReasonInput.required = false;
+                otherReasonInput.value = '';
+            }
+        }
+
+        // 表單提交處理
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            console.log('表單資料:', data);
+            alert('表單提交成功！\n\n資料已記錄在控制台中。');
+        }
+
+        // 事件監聽器
+        document.addEventListener('DOMContentLoaded', function() {
+            prefillForm();
+            
+            document.getElementById('furnitureStatus').addEventListener('change', toggleConditionalFields);
+            document.getElementById('offlineReason').addEventListener('change', toggleOtherReasonField);
+            document.getElementById('furnitureForm').addEventListener('submit', handleSubmit);
+        });
+    </script>
+</body>
+</html>
