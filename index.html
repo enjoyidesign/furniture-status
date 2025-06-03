@@ -144,6 +144,89 @@
             font-size: 16px;
         }
 
+        /* 提交成功彈窗樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            color: #333;
+            position: relative;
+            animation: slideIn 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #4CAF50;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-message {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: #666;
+        }
+
+        .modal-close {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .modal-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            background: #45a049;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         @media (max-width: 600px) {
             .form-container {
                 margin: 10px;
@@ -226,6 +309,16 @@
 
             <button type="submit" class="submit-btn">提交表單</button>
         </form>
+    </div>
+
+    <!-- 提交成功彈窗 -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">✅</div>
+            <div class="modal-title">提交成功！</div>
+            <div class="modal-message">您的家具狀態已成功更新</div>
+            <button class="modal-close" onclick="closeModal()">確定</button>
+        </div>
     </div>
 
     <script>
@@ -404,6 +497,31 @@
             }
         }
 
+        // 顯示成功彈窗
+        function showSuccessModal() {
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'block';
+            
+            // 3秒後自動關閉
+            setTimeout(() => {
+                closeModal();
+            }, 3000);
+        }
+
+        // 關閉彈窗
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            modal.style.display = 'none';
+        }
+
+        // 點擊彈窗外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('successModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
         // 表單提交處理
         async function handleSubmit(event) {
             event.preventDefault();
@@ -428,32 +546,26 @@
             console.log('表單資料:', data);
             
             try {
-                // TODO: 請將此處的 webhook URL 替換為您的實際 webhook 地址
+                // Make.com Webhook URL
                 const webhookUrl = 'https://hook.us1.make.com/1pt6ztt3vab8hsn5xq9bxkq2gqbyf5pl';
                 
-                // 如果有設定 webhook URL，發送資料
-                if (webhookUrl && webhookUrl !== 'YOUR_WEBHOOK_URL_HERE') {
-                    const response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    if (response.ok) {
-                        alert('表單提交成功！✅');
-                    } else {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    showSuccessModal();
                 } else {
-                    // 如果沒有設定 webhook，顯示提示
-                    alert('表單資料已準備完成！\n\n請設定 webhook URL 來接收表單資料。\n\n資料已記錄在控制台中。');
+                    throw new Error(`提交失敗，請稍後再試`);
                 }
                 
             } catch (error) {
                 console.error('提交錯誤:', error);
-                alert('提交失敗，請稍後再試。\n\n錯誤訊息: ' + error.message);
+                alert('❌ 提交失敗\n\n' + error.message);
             } finally {
                 // 恢復按鈕狀態
                 submitBtn.textContent = originalText;
