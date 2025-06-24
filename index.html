@@ -200,7 +200,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="buyer">成交對象 *</label>
+                    <label for="buyer">成交對象</label>
                     <input type="text" id="buyer" name="buyer">
                 </div>
             </div>
@@ -380,7 +380,6 @@
                 closedFields.style.display = 'block';
                 // 設定必填屬性
                 document.getElementById('closedDate').required = true;
-                document.getElementById('buyer').required = true;
                 // 移除下架欄位的必填屬性
                 document.getElementById('offlineReason').required = false;
                 document.getElementById('otherReason').required = false;
@@ -394,7 +393,6 @@
             } else {
                 // 移除所有條件欄位的必填屬性
                 document.getElementById('closedDate').required = false;
-                document.getElementById('buyer').required = false;
                 document.getElementById('offlineReason').required = false;
                 document.getElementById('otherReason').required = false;
             }
@@ -447,7 +445,7 @@
             
             try {
                 // Make.com Webhook URL
-                const webhookUrl = 'https://hook.us2.make.com/1er7mr34cgmfmutsevej8mt2ruv2sh1h';
+                const webhookUrl = 'https://hook.us1.make.com/1pt6ztt3vab8hsn5xq9bxkq2gqbyf5pl';
                 
                 const response = await fetch(webhookUrl, {
                     method: 'POST',
